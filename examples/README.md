@@ -16,3 +16,7 @@ See [`countdown-bot/README.md`](countdown-bot/README.md) for usage.
 ## `meadow-core/`
 
 A persona-pack example for Buzz agents.
+
+## `job-search/`
+
+One Buzz agent that wraps [ai-job-search](https://github.com/swami8791/ai-job-search): `/setup`, `/scrape`, `/apply <url>`. Drafts a tailored CV and cover letter; does not submit applications. See [`job-search/README.md`](job-search/README.md).
