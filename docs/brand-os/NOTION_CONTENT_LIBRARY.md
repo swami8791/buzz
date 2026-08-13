@@ -1,26 +1,14 @@
-# Notion Content Library Strategy
+# Notion is a search tool
 
-## Purpose
+Notion is the long-term source library. Agents search it. It is not a Brand OS workflow, pipeline stage, or fourth teammate.
 
-Notion is the long-term source library for Brand OS. It should not be treated as raw training data or blindly summarized. Instead, agents should use it as a trusted source layer for discovering, verifying, and repurposing Nehal's actual work.
+## Ownership
 
-## Source-to-content rule
+Notion owns knowledge. Brand OS does not copy Notion into a second CMS. After a search hit, extract what the post needs. Leave the page where it is.
 
-Every content asset should move through this chain:
+## What to search
 
-```text
-SOURCE
-  -> INSIGHT
-  -> CURRENT RELEVANCE
-  -> NEHAL'S POINT OF VIEW
-  -> CONTENT
-```
-
-The system should not simply summarize old documents.
-
-## Recommended source categories
-
-Organize the Notion source material into these logical categories:
+Logical categories already in the workspace (do not require a cleanup pass before Gate 1):
 
 1. Media / Press
 2. Press Releases
@@ -33,113 +21,39 @@ Organize the Notion source material into these logical categories:
 9. Accomplishments / Verified Claims
 10. Archive / Legacy
 
-## Existing material discovered
+Known useful material includes the Media database under Resume Hub, FCC / UPMC press, accomplishments, education and publications, leadership and speaking, grants, RealTime Clinic, PeLTQL, AFTER / Mira, Hermes, KeepAfter, and overlapping legacy press pages. Duplicates exist. Prefer the strongest page; do not delete anything during a brand run.
 
-The workspace already contains useful source material including:
+The Media database fields (Name, Date, Files & media, Synopsis, Website, Tags) are enough to search. Tags include grant, PCORI, press release, FCC, UPMC, RealTime Clinic, and others.
 
-- a Media database under Resume Hub
-- FCC press releases
-- UPMC FCC press releases
-- a List of Accomplishments page
-- Education, Certificates & Publications
-- Leadership & Speaking Events
-- Grants
-- RealTime Clinic pages
-- PeLTQL materials and product roadmap
-- AFTER / Mira AI prompts, QA, safety, and implementation documents
-- Hermes / AI operating-system material
-- KeepAfter product and UX work
-- tool-stack documentation
-- older press-release link hubs and legacy pages
+## Who searches
 
-There are also duplicate press release pages and overlapping legacy records that should be mapped before any destructive cleanup.
+All four agents may search Notion. Typical use:
 
-## Media database
+- **Brand OS** — Gate 1 slate: what is worth talking about now
+- **Researcher** — source pack for a selected topic
+- **Writer** — original page for a detail, not a summary of a summary
+- **Editor** — check a personal claim
 
-The existing Media database is already a good foundation and includes fields such as:
+There is no Audience Analyst or Content Director pass through Notion.
 
-- Name
-- Date
-- Files & media
-- Synopsis
-- Website
-- Tags
+## How to use a hit
 
-Existing tags include grant, PCORI, press release, announcement, FCC, UPMC, Starzl, UCSF, LA Times, RealTime Clinic, and Myrx365.
-
-## Agent use of Notion
-
-### Researcher
-
-Search Notion before the public web when looking for personal stories, claims, accomplishments, source material, project history, and repurposing opportunities.
-
-### Audience Analyst
-
-Use the source material to determine which stories or lessons are relevant to specific audiences today.
-
-### Content Director
-
-Use Notion to build an editorial slate that balances historical proof with current work and broader founder positioning.
-
-### Ghostwriter
-
-Read original source material for an approved topic rather than relying on a research summary alone.
-
-### Claims Guard
-
-Use Notion as one source of evidence, but preserve provenance and verification status. A page containing a claim does not automatically make the claim verified if conflicting sources exist.
-
-## Repurposing examples
-
-A press release should not become another press release summary. It could become:
+Do not turn a press release into a press-release summary. Use it as:
 
 - a founder lesson about adoption
-- a story about grant-funded product execution
-- a reflection on what was harder than expected
-- a then-vs-now post
-- a lesson that applies to AI or startup operations today
+- a grant-funded execution story
+- what was harder than expected
+- then vs now
+- a lesson that applies to AI or operators today
 
-A case study could become:
+Same idea for case studies, publications, and current project pages.
 
-- an operator post
-- a failure-mode post
-- a before/after workflow story
-- a proof-oriented carousel
+## Constraint
 
-A publication could become:
-
-- a practical insight
-- a methodological lesson
-- a story about evidence vs hype
-- a founder/operator takeaway
-
-A current project page could become:
-
-- a building-in-public post
-- a technical tradeoff explained for founders
-- an experiment/results post
-- a lesson from an agent workflow failure
-
-## Cleanup policy
-
-Do not move, merge, or delete Notion content until a mapping pass is complete.
-
-For each source item classify:
-
-- KEEP AS PRIMARY
-- MERGE INTO PRIMARY
-- ARCHIVE
-- LEGACY REFERENCE
-- NEEDS REVIEW
-
-Duplicates should be resolved by preserving the strongest canonical record and linking or archiving the others rather than deleting source history prematurely.
-
-## Personal-brand constraint
-
-The Notion archive contains extensive healthcare evidence. Brand OS must not infer that healthcare should therefore dominate the brand.
-
-The target identity remains:
+The archive is heavy on healthcare. The brand is not. Positioning stays:
 
 > Founder building high-stakes startups across AI, data, and real-world systems
 
-The Notion source layer should be used to prove range, rigor, and experience, not to narrow the brand.
+## Cleanup
+
+Do not move, merge, or delete Notion content as part of Brand OS. Mapping (KEEP / MERGE / ARCHIVE / LEGACY / NEEDS REVIEW) is a separate human task.

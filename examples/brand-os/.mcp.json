@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "${NOTION_TOKEN}"
+      }
+    },
+    "robinreach": {
+      "command": "${ROBINREACH_MCP_COMMAND}",
+      "args": [],
+      "env": {
+        "ROBINREACH_API_KEY": "${ROBINREACH_API_KEY}"
+      }
+    }
+  }
+}

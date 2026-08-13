@@ -1,228 +1,78 @@
 # Brand OS Operations
 
-## Normal operating mode
+Brand OS is used from Buzz. Config lives in [`examples/brand-os/`](../../examples/brand-os/).
 
-Brand OS is designed to be used from Buzz, not from Cursor, once the system is healthy.
+## How to run Gate 1
 
-Primary user command:
+1. Message Brand OS: `Run my brand`
+2. Wait for ~5 numbered topics
+3. Reply with numbers only, e.g. `2, 3, 5`
 
-`Run my brand`
+That reply is Gate 1. Brand OS then runs Researcher → Writer → Editor → unpublished RobinReach drafts for those numbers.
 
-The preferred workflow is editorial-control-first:
+Do not also approve pillars, hooks, or outlines.
 
-1. Brand OS researches current source material and performance.
-2. Brand OS proposes a short editorial slate.
-3. Nehal chooses which ideas to pursue.
-4. Internal agents create hooks, write, fact-check, and edit.
-5. Approved pieces become unpublished RobinReach drafts.
-6. Brand OS returns draft IDs for review.
-7. Nehal explicitly approves a specific draft before scheduling or publishing.
+## How to run Gate 2
 
-## Recommended Brand OS responses
+1. Brand OS reports `N drafts ready` with RobinReach IDs
+2. Review the drafts in RobinReach (or the copy Brand OS posted)
+3. Message Brand OS: `Publish {id} tomorrow at 8 AM` (or `Schedule post {id} for Tuesday at 8:00 AM CT`)
 
-### Status
+Only that ID goes live. Other drafts stay drafts.
+
+Invalid as Gate 2: `Run my brand`, `continue`, `looks good`, `approved` with no post ID.
+
+## Status
 
 ```text
 BRAND OS: online
-MODE: draft-only
-DRAFTS READY: [number]
-NEXT ACTION: [short description]
-NEEDS YOU: none or exact issue
+MODE: draft-only until Gate 2
+DRAFTS READY: [N from RobinReach]
+NEXT ACTION: Gate 1 numbers | pipeline | Gate 2
+NEEDS YOU: none or the exact question
 ```
-
-### Editorial slate
-
-Each idea should include:
-
-- title / topic
-- content pillar
-- target audience
-- why it matters now
-- why it fits Nehal's brand
-- source material to draw from
-- recommended format
-
-The system should ask Nehal to choose by number/letter rather than requiring him to invent topics.
-
-### Draft completion
-
-```text
-BRAND OS: complete
-NEW DRAFTS: [number]
-READY FOR REVIEW:
-- [POST ID] | [topic]
-RECOMMENDED TIMES:
-- [time]
-SCHEDULED: 0
-PUBLISHED: 0
-NEEDS YOU: Review drafts
-```
-
-## Approval rules
-
-A public action requires explicit post-specific approval.
-
-Valid examples:
-
-- `Approve post 933403`
-- `Schedule post 933403 for August 11 at 8:00 AM CT`
-- `Publish post 933403`
-
-Invalid as public-action authorization:
-
-- `Run my brand`
-- `continue`
-- `looks good`
-- `approved` with no post ID
-- `handle LinkedIn`
 
 ## Draft-only invariant
 
-The normal Brand OS workflow must not call scheduling or immediate-publication tools.
+Until Gate 2 names an ID, Brand OS may:
 
-Normal run may:
+- search Notion
+- read knowledge and analytics
+- research, write, edit
+- create unpublished RobinReach drafts
 
-- read analytics
-- inspect account and audience timing
-- research
-- write
-- validate
-- create unpublished drafts
+It may not:
 
-Normal run may not:
-
-- use immediate publish
-- schedule
-- reschedule
-- delete
-- alter already-published content
+- publish
+- schedule / reschedule
+- delete scheduled or published posts
 
 ## Duplicate protection
 
-A content slot is complete only when a corresponding RobinReach post currently exists and is an unpublished draft with a valid RobinReach post ID.
+A piece is a draft only when RobinReach currently has an unpublished post with that ID. Check RobinReach, not a local calendar. Record the ID in `examples/brand-os/knowledge/EXISTING.md` so Gate 1 does not re-propose it.
 
-Do not count as complete:
+## Runtime (kept from the conversion)
 
-- planned topics
-- recommended times
-- stale local calendar entries
-- deleted RobinReach posts
-- previously scheduled posts that were removed
-- stale post IDs
+- One user-facing Buzz agent, owner-only
+- buzz-acp + Codex
+- Idle timeout 1800s, max turn duration 3600s (idle must be less than max)
+- Brand OS pubkey must be a relay member
+- `BUZZ_AUTH_TAG` must resolve an owner or owner-only DMs are dropped
+- Load the Brand OS persona, not a generic Buzz debugging prompt
+- `Run my brand` must execute Gate 1, not only acknowledge the command
 
-Before creating a draft, check both local calendar state and live RobinReach state.
+Attach Notion MCP and RobinReach MCP to the Codex session (`NOTION_TOKEN`, `ROBINREACH_MCP_COMMAND`, `ROBINREACH_API_KEY`). Recreate the four personas in Desktop from `buzz pack inspect ./examples/brand-os`.
 
-## Performance learning
+## Failure modes worth remembering
 
-Performance analysis should prefer repeated patterns over one-off outcomes.
+These happened in production. They are bugs, not style:
 
-Do not optimize for impressions alone.
+- Too many handoffs: work died between extra agents. Fixed by four agents only.
+- Too much state: local calendars drifted from RobinReach. Fixed by querying RobinReach.
+- Silent failures: command recognized but not executed; generic persona; null pubkey; timeout config; not a relay member; no LinkedIn profile in RobinReach. Keep the checks above.
 
-Useful signals may include:
+If Gate 1 returns no topics, the search failed — say that. Do not invent a slate. If RobinReach returns no draft ID, the slot is not done.
 
-- comments from desired audiences
-- saves
-- shares
-- profile visits
-- meaningful reactions
-- topic/pillar patterns
-- format patterns
-- hook style
-- posting time
+## Content range
 
-The system should not chase engagement bait or turn Nehal into a generic AI-content account.
-
-## Content diversity
-
-Maintain range across:
-
-- BUILDING
-- OPERATOR
-- PROOF
-- PERSPECTIVE
-
-Avoid producing multiple posts that are merely variations of the same AI-workflow thesis.
-
-Use healthcare selectively as proof of difficulty, evidence, and operating experience.
-
-## Failure modes encountered during setup
-
-### Buzz Desktop agent store parse failure
-
-Symptom:
-
-`invalid type: null, expected a string`
-
-Root cause:
-
-Brand OS record contained a null `pubkey` where Buzz expected a string.
-
-Fix:
-
-Repair the managed-agent store record against the expected schema and validate the entire store.
-
-### Harness timeout configuration
-
-Symptom:
-
-`idle_timeout (3600s) must be less than max_turn_duration (3600s)`
-
-Fix:
-
-- idle timeout: 1800 seconds
-- max turn duration: 3600 seconds
-
-### Relay membership failure
-
-Symptom:
-
-`Auth failed: restricted: not a relay member`
-
-Fix:
-
-Admit the Brand OS public key to the active Buzz community/relay membership list.
-
-### DM messages received but no response
-
-Root cause:
-
-`respond_to=owner-only` had no resolved owner due to an invalid `BUZZ_AUTH_TAG`; inbound events were dropped. ACP text output also needed to be sent back as Buzz messages.
-
-Fix:
-
-Restore owner resolution, preserve owner-only access, and route agent output into the same Buzz thread.
-
-### Generic Buzz debugging persona loaded
-
-Symptom:
-
-Brand OS responded as a Buzz debugging/support agent rather than a personal-brand manager.
-
-Fix:
-
-Ensure the active Buzz-managed Brand OS definition loads the Brand OS persona and routes `Run my brand` to the existing orchestration rather than a generic fallback prompt.
-
-### Command recognized but orchestration not executed
-
-Symptom:
-
-Brand OS returned internal acknowledgement/debug text instead of executing the production workflow.
-
-Fix:
-
-Route the command into the actual `run-my-brand` orchestration and return the final executive summary to Buzz.
-
-### Zero drafts despite successful planning
-
-Causes encountered:
-
-- an earlier foreground test was intentionally aborted by piping through `head`
-- RobinReach initially had no LinkedIn profile connected
-
-After the LinkedIn profile was connected, the live production flow created six unpublished drafts successfully.
-
-## Current known behavior
-
-A live Brand OS run successfully created six RobinReach drafts and returned IDs while keeping scheduling and publishing at zero.
-
-The next behavior change should insert an editorial approval gate before draft creation, so Nehal chooses among proposed concepts before the creative pipeline runs.
+Gate 1 should not dump six AI-governance variants. Use `knowledge/POSITIONING.md`. Healthcare is evidence, not the default topic.
