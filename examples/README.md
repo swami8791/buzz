@@ -16,3 +16,7 @@ See [`countdown-bot/README.md`](countdown-bot/README.md) for usage.
 ## `meadow-core/`
 
 A persona-pack example for Buzz agents.
+
+## `brand-os/`
+
+Nehal Brand OS: one Buzz-facing orchestrator plus Researcher, Writer, and Editor. Two approval gates (`Run my brand` topic numbers, then `Publish {id} …`). Notion and RobinReach are MCP tools. See [`brand-os/README.md`](brand-os/README.md) and [`docs/brand-os/`](../docs/brand-os/).

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://open-plugin-spec.org/schema/v1/plugin.json",
+  "id": "com.nehal.brand-os",
+  "name": "Brand OS",
+  "version": "2.0.0",
+  "description": "One orchestrator and three workers. Two approval gates. Notion and RobinReach are tools, not agents.",
+  "author": "Nehal Swami",
+  "keywords": ["brand", "linkedin", "editorial"],
+  "personas": [
+    "agents/brand-os.persona.md",
+    "agents/researcher.persona.md",
+    "agents/writer.persona.md",
+    "agents/editor.persona.md"
+  ],
+  "pack_instructions": "instructions.md",
+  "mcp_config": ".mcp.json",
+  "defaults": {
+    "temperature": 0.5,
+    "triggers": {
+      "mentions": true,
+      "keywords": [],
+      "all_messages": false
+    },
+    "thread_replies": true,
+    "broadcast_replies": false
+  }
+}
