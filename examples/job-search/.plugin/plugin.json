@@ -1,0 +1,21 @@
+{
+  "$schema": "https://open-plugin-spec.org/schema/v1/plugin.json",
+  "id": "com.nehal.job-search",
+  "name": "Job Search",
+  "version": "1.0.0",
+  "description": "One Buzz agent. Project is ai-job-search. /setup, /scrape, /apply. Drafts a tailored CV and cover letter — never submits applications.",
+  "author": "Nehal Swami",
+  "keywords": ["job-search", "resume", "cv", "cover-letter"],
+  "personas": ["agents/job-search.persona.md"],
+  "pack_instructions": "instructions.md",
+  "defaults": {
+    "temperature": 0.4,
+    "triggers": {
+      "mentions": true,
+      "keywords": [],
+      "all_messages": false
+    },
+    "thread_replies": true,
+    "broadcast_replies": false
+  }
+}
