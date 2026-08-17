@@ -1,206 +1,103 @@
 # Brand OS Architecture
 
+Locked 2026-08-13. This file is the architecture. [`BUILD_HISTORY.md`](BUILD_HISTORY.md) is how we got here, including the over-engineered version this lock replaces.
+
 ## System boundary
 
-Buzz is the executive interface, not the content database and not the publishing system.
+```text
+Notion owns knowledge.
+RobinReach owns posts.
+Buzz owns conversation.
+Brand OS coordinates them.
+```
 
-RobinReach is the publishing/draft/analytics infrastructure.
+Buzz is the executive interface. It is not the content database and not the publishing system.
 
-Notion is the long-term source library and content memory.
-
-The Brand OS orchestration layer coordinates internal agents and tools while presenting one simple Buzz-facing agent to Nehal.
-
-## High-level architecture
+## Diagram
 
 ```text
 Nehal
   |
   v
-Buzz Desktop
+Buzz (conversation)
   |
   v
-Brand OS
+Brand OS (orchestrator)
   |
-  +--> Notion source library
-  +--> RobinReach analytics
-  +--> Brand Knowledge Base
+  +-- search --> Notion
+  +-- read    --> knowledge/ (voice, positioning, existing IDs)
+  +-- query   --> RobinReach (analytics, draft/scheduled/published)
   |
+  |  after Gate 1 numbers:
   v
-Research / Audience / Editorial planning
+Researcher --> Writer --> Editor --> RobinReach unpublished draft
   |
+  |  after Gate 2 named ID:
   v
-Nehal topic selection
-  |
-  v
-Hook Master -> Main Ghostwriter -> Claims Guard -> Cynical Editor
-  |
-  v
-RobinReach unpublished draft
-  |
-  v
-Nehal post-specific approval
-  |
-  v
-Schedule / Publish
+RobinReach schedule / publish that ID only
 ```
 
-## Internal agents
+## Persistent agents (four)
 
-### Brand Researcher
+### Brand OS (user-facing)
 
-Purpose:
+- Runs Gate 1 and Gate 2 in conversation
+- Searches Notion and knowledge for the topic slate
+- Dispatches Researcher, Writer, Editor
+- Creates unpublished RobinReach drafts after Editor pass
+- Schedules/publishes only when Gate 2 names a post ID
 
-- discover source material
-- verify claims
-- identify stories, accomplishments, lessons, projects, research, grants, speaking, and company history
-- maintain source provenance
+Does not write the post, does not pick topics without Gate 1 numbers, does not add agents.
 
-Source priority:
+### Researcher
 
-1. Nehal-provided material
-2. Verified Brand Knowledge Base
-3. Notion source databases
-4. Primary public sources
-5. Nehal's public profiles/content
-6. Reputable secondary sources
+- Searches Notion, knowledge, and current public information
+- Returns sourced findings and claim status (VERIFIED / LIKELY / UNVERIFIED / CONFLICTING)
+- Does not write, hook, or publish
 
-Claims can be marked VERIFIED, LIKELY, UNVERIFIED, or CONFLICTING. Only VERIFIED claims may flow automatically into public content.
+### Writer
 
-### Audience Analyst
+- One pass: analyze audience → 5 hooks → select strongest → write the post
+- Audience analysis and hooks are tasks inside this agent
+- Grounds copy in the research pack and `knowledge/VOICE.md`
 
-Purpose:
+### Editor
 
-- determine who should care about an idea
-- identify audience tension, relevance, objections, and likely value
-- prevent content from being internally interesting but externally irrelevant
+- Challenges the selected hook, the claims, and the voice
+- `pass` or `revise` — no numeric score gate, no third human gate
+- Does not rewrite the post or call RobinReach
 
-### Content Director
-
-Purpose:
-
-- maintain content range
-- prevent topic repetition
-- propose editorial concepts
-- explain why each concept matters for Nehal's positioning
-
-It should not unilaterally determine Nehal's public narrative. It should return an editorial slate for approval.
-
-### Hook Master
-
-Purpose:
-
-- turn approved ideas into strong angles
-- generate several hook options
-- recommend the strongest framing
-- avoid generic influencer hooks and empty contrarianism
-
-### Main Ghostwriter
-
-Purpose:
-
-- write in Nehal's voice
-- ground posts in approved source material and angle
-- avoid invented experiences or unsupported claims
-- keep the writing operator-first, human, direct, and credible
-
-### Claims Guard
-
-Purpose:
-
-- validate specific personal claims against the Brand Knowledge Base and source records
-- block unsupported metrics, company claims, awards, customer names, funding, outcomes, and historical assertions
-
-### Cynical Editor
-
-Purpose:
-
-- reject generic AI copy
-- reject corporate language, fake vulnerability, motivational fluff, obvious AI phrasing, weak hooks, overclaiming, repetition, and excessive hashtags
-- enforce brand positioning and natural voice
-
-Quality threshold used in the existing system: editor score >= 85 before a piece may become a RobinReach draft.
-
-### Performance Analyst
-
-Purpose:
-
-- read RobinReach analytics
-- learn from repeated evidence, not one-off performance
-- avoid engagement bait
-- feed useful patterns back into editorial planning
-
-### Content Planner
-
-Purpose:
-
-- maintain a rolling content calendar
-- recommend times and cadence
-- never convert recommendations into scheduled/public posts without explicit post-specific approval
-
-## Brand Knowledge Base
-
-Existing local knowledge-base structure:
-
-- `brand/PROFILE.md`
-- `brand/VOICE.md`
-- `brand/CLAIMS.md`
-- `brand/CONTENT-PILLARS.md`
-- `brand/SOURCES.md`
-- `brand/RESEARCH-QUEUE.md`
-- `brand/PERFORMANCE.md`
-- `brand/CONTENT-CALENDAR.md`
-
-Content pillars:
-
-- BUILDING
-- OPERATOR
-- PROOF
-- PERSPECTIVE
-
-Healthcare should appear as evidence and experience but must not dominate simply because more historical healthcare material exists.
-
-## Tool boundaries
-
-### Buzz
-
-Use for:
-
-- direct conversation with Brand OS
-- topic review and selection
-- draft review commands
-- status
-- explicit approvals
-
-### RobinReach
-
-Use for:
-
-- account/profile discovery
-- analytics
-- best-time recommendations
-- post validation
-- unpublished draft creation
-- scheduling/publishing only after explicit approval
+## Tools (not agents, not stages)
 
 ### Notion
 
-Use for:
+Search tool for media, press, essays, case studies, publications, talks, company history, current projects, and accomplishments. See [`NOTION_CONTENT_LIBRARY.md`](NOTION_CONTENT_LIBRARY.md).
 
-- media library
-- press releases
-- blog posts and essays
-- case studies
-- publications and research
-- speaking/teaching history
-- founder/company history
-- current projects
-- verified accomplishments and source material
+### RobinReach
 
-## Editorial-control principle
+Account discovery, analytics, unpublished draft creation, and — after Gate 2 — schedule/publish of a named ID. RobinReach is the post-state store.
 
-Agents should do 99% of the work, but Nehal should retain two human gates:
+## Human gates (two)
 
-1. Editorial direction: choose which proposed ideas represent him.
-2. Public action: explicitly approve a specific draft before it can be scheduled or published.
+1. **What should we talk about?** `Run my brand` → ~5 options → user numbers.
+2. **Should this actually go live?** Drafts listed → `Publish {id} tomorrow at 8 AM`.
 
-This prevents the system from deciding both what Nehal believes and what gets publicly posted.
+## Internal states (three)
+
+`IDEA` → `DRAFT` → `PUBLISHED`
+
+A few IDs in `examples/brand-os/knowledge/EXISTING.md` record what already exists. No Brand OS duplicate of RobinReach scheduled/published.
+
+## Explicitly out of architecture
+
+| Removed | Where the work went |
+|---------|---------------------|
+| Audience Analyst | Writer task |
+| Hook Master | Writer task (5 hooks, then select) |
+| Content Director | Brand OS Gate 1 slate |
+| Claims Guard | Researcher status + Editor challenge |
+| Cynical Editor as extra agent | Editor |
+| Performance Analyst | Optional RobinReach analytics read during Gate 1 |
+| Content Planner / local calendar | RobinReach |
+| Editor score >= 85 as a gate | Editor pass/revise |
+| Giant content state machine | IDEA / DRAFT / PUBLISHED only |

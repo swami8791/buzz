@@ -1069,6 +1069,21 @@ mod tests {
     }
 
     #[test]
+    fn examples_brand_os_pack_validates() {
+        let pack_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples/brand-os");
+        let report = validate_pack(&pack_dir);
+        assert!(
+            !report.has_errors(),
+            "examples/brand-os must validate: {report}"
+        );
+        assert_eq!(
+            report.exit_code(),
+            0,
+            "examples/brand-os should have no warnings either: {report}"
+        );
+    }
+
+    #[test]
     fn examples_job_search_pack_validates() {
         let pack_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples/job-search");
         let report = validate_pack(&pack_dir);

@@ -17,6 +17,10 @@ See [`countdown-bot/README.md`](countdown-bot/README.md) for usage.
 
 A persona-pack example for Buzz agents.
 
+## `brand-os/`
+
+Nehal Brand OS: one Buzz-facing orchestrator plus Researcher, Writer, and Editor. Two approval gates (`Run my brand` topic numbers, then `Publish {id} …`). Notion and RobinReach are MCP tools. See [`brand-os/README.md`](brand-os/README.md) and [`docs/brand-os/`](../docs/brand-os/).
+
 ## `job-search/`
 
 One Buzz agent that wraps [ai-job-search](https://github.com/swami8791/ai-job-search): `/setup`, `/scrape`, `/apply <url>`. Drafts a tailored CV and cover letter; does not submit applications. See [`job-search/README.md`](job-search/README.md).

@@ -1,98 +1,83 @@
 # Nehal Brand OS
 
-This directory documents the personal-brand operating system built on top of Buzz and RobinReach.
+Locked 2026-08-13. One orchestrator, three workers, two gates. Do not add agents, gates, or states beyond this document.
 
 ## Goal
 
-Create a system where agents do roughly 99% of the research, topic development, writing, editing, fact-checking, repurposing, and draft preparation, while Nehal retains editorial control over what ideas get developed and explicit control over anything that is scheduled or published.
+Agents do the research, writing, editing, and unpublished draft work. Nehal chooses topics by number and names the post ID that may go live.
 
 ## Positioning
 
-Primary positioning:
-
 > Founder building high-stakes startups across AI, data, and real-world systems
 
-Healthcare is proof of operating rigor and experience, not the limit of the brand.
+Healthcare is proof of operating rigor, not the brand.
 
-## Core workflow
+## Architecture
 
-The intended production workflow is:
+```text
+                BRAND OS
+             (Orchestrator)
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+   RESEARCHER    WRITER     EDITOR
+        │          │          │
+        └──────────┴──────────┘
+                   │
+                   ▼
+             ROBINREACH
+               DRAFT
+```
 
-1. Brand Researcher
-2. Audience Analyst
-3. Content Director
-4. Hook Master
-5. Main Ghostwriter
-6. Claims Guard
-7. Cynical Editor
-8. RobinReach Draft
-9. Nehal review and explicit post-specific approval
-10. Scheduling/publishing only after explicit approval
+Implementation: [`examples/brand-os/`](../../examples/brand-os/) (persona pack, prompts, skills, MCP tool wiring).
 
-The Brand OS is exposed in Buzz as a single user-facing agent. Internal agents stay behind the scenes.
+Persistent agents: **Brand OS, Researcher, Writer, Editor**. RobinReach is the publish/draft tool, not a fourth content agent. Notion is a search tool, not a workflow.
 
-## Executive interface
+Writer tasks (not agents): analyze audience → generate 5 hooks → select strongest → write post. Editor challenges that hook choice.
 
-The user-facing command is:
+## Two gates
 
-`Run my brand`
+### Gate 1 — What should we talk about?
 
-The command should first produce an editorial slate for Nehal to choose from, not immediately decide Nehal's public narrative on its own.
+User: `Run my brand`
 
-Recommended interaction:
+Brand OS searches Notion + existing knowledge + current relevant information and returns ~5 topic options (examples: clinical product adoption vs AI adoption; biggest mistake building RealTime Clinic; why building with autonomous agents now; what founders misunderstand about real-world data; an old prediction that turned out wrong).
 
-1. Brand OS researches source material, audience fit, recent performance, and content gaps.
-2. Brand OS returns 5-8 editorial concepts with rationale.
-3. Nehal selects the ideas to pursue.
-4. Internal agents produce, fact-check, edit, and create unpublished RobinReach drafts.
-5. Nehal reviews the drafts.
-6. Scheduling or publishing requires explicit approval for a specific post ID.
+User replies with numbers (`2, 3, 5`). That is the entire Gate 1 mechanism.
 
-## Safety model
+Then: Researcher → Writer → Editor → RobinReach unpublished drafts.
 
-The system is in DRAFT-ONLY mode by default.
+### Gate 2 — Should this actually go live?
 
-Allowed without approval:
+Brand OS: `N drafts ready`. User reviews. User: `Publish {id} tomorrow at 8 AM`. Nothing else gets published.
 
-- research
-- audience analysis
-- topic generation
-- hook development
-- writing
-- editing
-- claims validation
-- performance analysis
-- recommended posting times
-- creation of unpublished RobinReach drafts
+## Internal state
 
-Not allowed without explicit post-specific approval:
+Only `IDEA` → `DRAFT` → `PUBLISHED`, plus a few IDs in `examples/brand-os/knowledge/EXISTING.md` so the system knows what already exists.
 
-- scheduling
-- rescheduling
-- publishing
-- deleting published/scheduled content
+RobinReach already knows draft/scheduled/published. Do not build another database that duplicates it.
 
-Examples of valid approval:
+Notion owns knowledge. RobinReach owns posts. Buzz owns conversation. Brand OS coordinates them.
 
-- `Approve post 933403`
-- `Schedule post 933403 for Tuesday at 8:00 AM CT`
-- `Publish post 933403`
+## Ownership of work
 
-Generic phrases like `Run my brand`, `continue`, or `approved` without a post ID are not sufficient permission.
+| Surface | Owns |
+|---------|------|
+| Buzz | Conversation, the two gates |
+| Brand OS | Coordination, Gate 1 slate, Gate 2 dispatch |
+| Notion | Source library (search) |
+| RobinReach | Draft / scheduled / published |
 
-## Current integrations
+## Runtime
 
-- Buzz Desktop: user-facing Brand OS interface
-- buzz-acp: agent runtime bridge
-- Codex: agent runtime
-- RobinReach MCP: draft creation, account metadata, analytics, and posting infrastructure
-- Notion: long-term source library for media, press releases, blog posts, case studies, publications, speaking history, projects, accomplishments, and related source material
+One user-facing Buzz agent. buzz-acp + Codex. Command-driven. Draft-only until Gate 2 names a post ID.
 
-## Current production state
+## Not this system
 
-Brand OS has successfully completed a live Buzz -> Brand OS -> RobinReach flow and created six unpublished RobinReach drafts while keeping:
+Do not implement:
 
-- `SCHEDULED: 0`
-- `PUBLISHED: 0`
+`IDEA → TOPIC_REVIEW → APPROVED_TOPIC → WRITING → EDITING → CLAIMS → READY → APPROVED → SCHEDULED → PUBLISHED → ANALYZED`
 
-The next product change is editorial-control-first behavior: Brand OS should present content concepts for approval before drafting them.
+Do not add Audience Analyst, Hook Master, Content Director, Claims Guard, Performance Analyst, or Content Planner as persistent agents.
+
+Three capable agents with good context beat eight agents handing JSON around. Simplify from here, not expand.
